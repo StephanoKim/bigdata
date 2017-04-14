@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:hadoop="http://www.springframework.org/schema/hadoop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+    <context:annotation-config/>
+    <context:component-scan base-package="com.sist.*"/>
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+      p:prefix="/movie/"
+      p:suffix=".jsp"
+    />
+    <hadoop:configuration id="hadoopConf">
+      fs.default.name=hdfs://localhost:9000
+    </hadoop:configuration>
+    <!-- Job job=Job.get(conf) -->
+    <hadoop:job id="movieFeelJob"
+        configuration-ref="hadoopConf"
+       input-path="/movie_input/"
+       output-path="/movie_output/"
+       mapper="com.sist.mapred.MovieMapper"
+       reducer="com.sist.mapred.MovieReducer"
+       scope="prototype"
+     />
+     <hadoop:job-runner id="jobRunner" 
+        job-ref="movieFeelJob"
+        run-at-startup="false"
+      />
+</beans>
+
+
+
+
+
+
